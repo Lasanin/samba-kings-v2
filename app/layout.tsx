@@ -1,6 +1,6 @@
 import "./globals.css";
 import { auth } from "../lib/auth";
-import Header from "../components/Header";
+import Header from "./components/Header";
 
 export const metadata = {
   title: "Samba Kings",
