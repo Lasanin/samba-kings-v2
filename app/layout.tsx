@@ -13,7 +13,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="cs">
       <body className="max-w-5xl mx-auto p-6">
-        <Header session={session} />
+       <Header />
         {children}
       </body>
     </html>
