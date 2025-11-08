@@ -1,0 +1,85 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String?
+  role         String   @default("PLAYER")
+  player       Player?  @relation(fields: [playerId], references: [id])
+  playerId     String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Player {
+  id        String   @id @default(cuid())
+  name      String
+  credit    Int      @default(0)
+  user      User?
+  payments  Payment[]
+  confirms  TrainingConfirmation[]
+  createdAt DateTime @default(now())
+  invitations  Invitation[]
+}
+
+model Training {
+  id        String   @id @default(cuid())
+  date      DateTime
+  price     Int
+  confirms  TrainingConfirmation[]
+  payments  Payment[]
+  createdAt DateTime @default(now())
+}
+
+model TrainingConfirmation {
+  id         String   @id @default(cuid())
+  player     Player   @relation(fields: [playerId], references: [id])
+  playerId   String
+  training   Training @relation(fields: [trainingId], references: [id])
+  trainingId String
+  attended   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@unique([playerId, trainingId])
+}
+
+model Payment {
+  id         String   @id @default(cuid())
+  player     Player   @relation(fields: [playerId], references: [id])
+  playerId   String
+  training   Training? @relation(fields: [trainingId], references: [id])
+  trainingId String?
+  amount     Int
+  kind       String
+  status     String   @default("PENDING")
+  note       String?
+  createdAt  DateTime @default(now())
+
+  @@index([trainingId])
+}
+
+model Invitation {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  player     Player   @relation(fields: [playerId], references: [id])
+  playerId   String
+  emailAlias String
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+}
